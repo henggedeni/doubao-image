@@ -52,7 +52,7 @@ export function getKimiScreenClient(): Runnable<
   const baseClient = new ChatOpenAI({
     model: config.kimiModel,
     apiKey: config.kimiApiKey,
-    temperature: 0,
+    // temperature: 0,
     timeout: config.aiTimeout,
     configuration: {
       baseURL: config.kimiBaseUrl,
@@ -173,7 +173,7 @@ export async function analyzeWithKimi(
   // 保存截图到本地
   await saveScreenshotLocally(imageBase64, saveTag ?? "screen");
 
-  logger.info("调用 Kimi 分析屏幕截图...");
+  logger.info(`${prompt} / 调用 Kimi 分析屏幕截图...`);
 
   const result = await client.invoke([
     {
