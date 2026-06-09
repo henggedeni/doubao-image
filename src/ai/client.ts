@@ -12,17 +12,24 @@ import { ChatOpenAI } from "@langchain/openai";
 import type { Runnable } from "@langchain/core/runnables";
 import type { BaseLanguageModelInput } from "@langchain/core/language_models/base";
 import { config } from "../config.js";
-import { ScreenAnalysisSchema, type ScreenAnalysis, ImageDetailSchema, type ImageDetail } from "./schemas.js";
+import {
+  ScreenAnalysisSchema,
+  type ScreenAnalysis,
+  ImageDetailSchema,
+  type ImageDetail,
+} from "./schemas.js";
 import * as logger from "../utils/logger.js";
 
 import { writeFile, mkdir } from "node:fs/promises";
 import { join } from "node:path";
 
 /** Kimi 屏幕分析结构化输出客户端 */
-let kimiScreenClient: Runnable<BaseLanguageModelInput, ScreenAnalysis> | null = null;
+let kimiScreenClient: Runnable<BaseLanguageModelInput, ScreenAnalysis> | null =
+  null;
 
 /** Kimi 图片详情结构化输出客户端 */
-let kimiDetailClient: Runnable<BaseLanguageModelInput, ImageDetail> | null = null;
+let kimiDetailClient: Runnable<BaseLanguageModelInput, ImageDetail> | null =
+  null;
 
 /**
  * 获取 Kimi 屏幕分析结构化输出客户端
@@ -30,16 +37,21 @@ let kimiDetailClient: Runnable<BaseLanguageModelInput, ImageDetail> | null = nul
  *
  * @returns 配置好的 Kimi 结构化输出 Runnable
  */
-export function getKimiScreenClient(): Runnable<BaseLanguageModelInput, ScreenAnalysis> {
+export function getKimiScreenClient(): Runnable<
+  BaseLanguageModelInput,
+  ScreenAnalysis
+> {
   if (kimiScreenClient) {
     return kimiScreenClient;
   }
 
-  logger.info(`初始化 Kimi 屏幕分析客户端: ${config.kimiBaseUrl} / ${config.kimiModel}`);
+  logger.info(
+    `初始化 Kimi 屏幕分析客户端: ${config.kimiBaseUrl} / ${config.kimiModel}`
+  );
 
   const baseClient = new ChatOpenAI({
-    modelName: config.kimiModel,
-    openAIApiKey: config.kimiApiKey,
+    model: config.kimiModel,
+    apiKey: config.kimiApiKey,
     temperature: 0,
     timeout: config.aiTimeout,
     configuration: {
@@ -47,9 +59,12 @@ export function getKimiScreenClient(): Runnable<BaseLanguageModelInput, ScreenAn
     },
   });
 
-  kimiScreenClient = baseClient.withStructuredOutput<ScreenAnalysis>(ScreenAnalysisSchema, {
-    name: "screen_analysis",
-  });
+  kimiScreenClient = baseClient.withStructuredOutput<ScreenAnalysis>(
+    ScreenAnalysisSchema,
+    {
+      name: "screen_analysis",
+    }
+  );
 
   return kimiScreenClient;
 }
@@ -60,16 +75,21 @@ export function getKimiScreenClient(): Runnable<BaseLanguageModelInput, ScreenAn
  *
  * @returns 配置好的 Kimi 结构化输出 Runnable
  */
-export function getKimiDetailClient(): Runnable<BaseLanguageModelInput, ImageDetail> {
+export function getKimiDetailClient(): Runnable<
+  BaseLanguageModelInput,
+  ImageDetail
+> {
   if (kimiDetailClient) {
     return kimiDetailClient;
   }
 
-  logger.info(`初始化 Kimi 图片详情客户端: ${config.kimiBaseUrl} / ${config.kimiModel}`);
+  logger.info(
+    `初始化 Kimi 图片详情客户端1: ${config.kimiBaseUrl} / ${config.kimiModel}`
+  );
 
   const baseClient = new ChatOpenAI({
-    modelName: config.kimiModel,
-    openAIApiKey: config.kimiApiKey,
+    model: config.kimiModel,
+    apiKey: config.kimiApiKey,
     temperature: 0,
     timeout: config.aiTimeout,
     configuration: {
@@ -77,9 +97,12 @@ export function getKimiDetailClient(): Runnable<BaseLanguageModelInput, ImageDet
     },
   });
 
-  kimiDetailClient = baseClient.withStructuredOutput<ImageDetail>(ImageDetailSchema, {
-    name: "image_detail",
-  });
+  kimiDetailClient = baseClient.withStructuredOutput<ImageDetail>(
+    ImageDetailSchema,
+    {
+      name: "image_detail",
+    }
+  );
 
   return kimiDetailClient;
 }
@@ -91,7 +114,10 @@ export function getKimiDetailClient(): Runnable<BaseLanguageModelInput, ImageDet
  * @param imageBase64 - base64 编码的图片数据
  * @param tag - 调用场景标签（如 "monitor", "download", "detect", "detail"）
  */
-async function saveScreenshotLocally(imageBase64: string, tag: string): Promise<void> {
+async function saveScreenshotLocally(
+  imageBase64: string,
+  tag: string
+): Promise<void> {
   const dir = config.screenshotSaveDir;
   if (!dir) {
     return;

@@ -39,7 +39,10 @@ export interface AppConfig {
  * @param defaultValue - 默认值
  * @returns 解析后的正整数
  */
-function parsePositiveInt(value: string | undefined, defaultValue: number): number {
+function parsePositiveInt(
+  value: string | undefined,
+  defaultValue: number
+): number {
   if (value === undefined || value.trim() === "") {
     return defaultValue;
   }
